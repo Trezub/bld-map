@@ -2,15 +2,10 @@ import { nextTick } from 'vue';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import MapTwo from '../pages/MapTwo.vue';
 
-const DefaultLayout = () => import('../layouts/Default.vue');
-
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    component: DefaultLayout,
-    children: [
-      { path: 'map2', component: MapTwo },
-    ],
+    component: MapTwo,
   },
 ];
 
