@@ -1,168 +1,121 @@
 <script setup lang="ts">
 import { GoogleMap, Marker, Polyline } from 'vue3-google-map';
 import { generateRandomColor } from '../utils/generateRandomColor';
-import data from './data.json';
 import VueElementLoading from 'vue-element-loading';
 import { reactive, ref, watch } from 'vue';
 import Multiselect from '@vueform/multiselect';
+import { Route } from '../types/Routes.types';
+import { Convert } from '../types/Routes.types';
 
 const center = {
-  lat: -25.43578524053438,
-  lng: -49.256734002415286,
+    lat: -25.43578524053438,
+    lng: -49.256734002415286,
 };
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_MAPS as string;
 
-interface Routes {
-  id: string;
-}
-
 type Libraries = (
-  | 'drawing'
-  | 'geometry'
-  | 'localContext'
-  | 'places'
-  | 'visualization'
+    | 'drawing'
+    | 'geometry'
+    | 'localContext'
+    | 'places'
+    | 'visualization'
 )[];
+
 const libraries: Libraries = [
-  'geometry', // Usado para fazer decode dos polylines
+    'geometry', // Usado para fazer decode dos polylines
 ];
-const routes = data.map((route) => ({
-  ...route,
-  color: generateRandomColor(),
-}));
+
+type ImportedRoute = Route & {
+    color: string;
+    label: string;
+}
 
 const isLoading = ref(false);
 const mapRef = ref<typeof GoogleMap>();
+
 const routesValues = reactive({
-  value: [] as Routes[],
-  options: routes.map((route) => {
-    return {
-      id: String(route.routeId),
-    };
-  }),
+    value: [] as { label: string }[],
+    options: [] as ImportedRoute[],
 });
 
 const filteredRoutes = reactive({
-  data: routes,
+    data: [] as ImportedRoute[],
 });
 
 watch(
-  () => mapRef.value?.ready,
-  (ready) => {
-    if (!ready) {
-      isLoading.value = true;
-    } else {
-      isLoading.value = false;
+    () => mapRef.value?.ready,
+    (ready) => {
+        isLoading.value = !ready;
     }
-    // console.log(mapRef.value, ready);
-
-    // do something with the api using `mapRef.value.api`
-    // or with the map instance using `mapRef.value.map`
-  }
 );
 
-async function handleAddRoute() {
-  filteredRoutes.data = routes.filter(({ routeId }) =>
-    routesValues.value.some((route) => route.id === String(routeId))
-  );
-}
-
-function handleRemove() {
-  filteredRoutes.data = routes.filter(({ routeId }) =>
-    routesValues.value.some((route) => route.id === String(routeId))
-  );
+async function handleChange() {
+    filteredRoutes.data = routesValues.options.filter(({ label }) =>
+        routesValues.value.some((route) => route.label === label)
+    );
+    console.log(routesValues.value);
 }
 
 function handleClearRoutes() {
-  filteredRoutes.data = [];
+    filteredRoutes.data = [];
 }
+
+async function handleAddInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (!target.files) {
+        return;
+    }
+    const newInputs = (await Promise.all(Array.from(target.files).map(async (file) => {
+        const content = await file.text();
+        return Convert.toRoute(content).map((route) => ({ ...route, color: generateRandomColor(), label: `${file.name} - ${route.routeId}` })) as ImportedRoute[];
+    }))).flat();
+    routesValues.options = [...routesValues.options, ...newInputs];
+}
+
 </script>
 
 <template>
-  <section class="flex-container rounded bg-white shadow m-3">
-    <VueElementLoading
-      :active="isLoading"
-      spinner="spinner"
-      color="#FF6700"
-      is-full-screen
-    />
+    <section class="flex-container rounded bg-white shadow m-3">
+        <VueElementLoading :active="isLoading" spinner="spinner" color="#FF6700" is-full-screen />
 
-    <div class="d-flex my-2 p-1">
-      <Multiselect
-        v-model="routesValues.value"
-        @select="handleAddRoute"
-        @deselect="handleRemove"
-        mode="tags"
-        :close-on-select="false"
-        :searchable="false"
-        :create-option="false"
-        :options="routesValues.options"
-        value-prop="id"
-        label="id"
-        :object="true"
-        @clear="handleClearRoutes"
-      />
-    </div>
+        <div class="d-flex">
+            <Multiselect v-model="routesValues.value" @select="handleChange" @deselect="handleChange" mode="tags"
+                :close-on-select="false" :searchable="false" :create-option="false" :options="routesValues.options"
+                value-prop="label" label="label" :object="true" @clear="handleClearRoutes" />
+            <input type="button" onclick="document.getElementById('file').click()" value="Adicionar entrada" />
+            <input type="file" style="display:none;" id="file" name="file" @change="handleAddInput" multiple />
+        </div>
 
-    <GoogleMap
-      ref="mapRef"
-      :api-key="googleApiKey"
-      style="width: 100%; height: 100vh"
-      :center="center"
-      :zoom="12"
-      :libraries="libraries"
-    >
-      <template #default="{ ready, api, map, mapTilesLoaded }">
-        <!-- First pattern: Here you have access to the API and map instance.
-      "ready" is a boolean that indicates when the Google Maps script
-      has been loaded and the api and map instance are ready to be used -->
-        <template
-          v-if="ready"
-          v-for="route in filteredRoutes.data"
-          :key="route.routeId"
-        >
-          <Marker
-            :key="index"
-            v-for="(stop, index) in route.stops"
-            :options="{
-              position: {
-                lat: stop.address.latitude,
-                lng: stop.address.longitude,
-              },
-            }"
-          />
+        <GoogleMap ref="mapRef" :api-key="googleApiKey" style="width: 100%; height: 100vh" :center="center" :zoom="12"
+            :libraries="libraries">
+            <template #default="{ ready, api }">
+                <template v-if="ready" v-for="route in filteredRoutes.data" :key="route.routeId">
+                    <Marker :key="index" v-for="(stop, index) in route.stops" :options="{
+                        position: {
+                            lat: stop.address.latitude,
+                            lng: stop.address.longitude,
+                        }, icon: {
+                            path: api.maps.SymbolPath.CIRCLE,
+                            scale: 7,
+                            strokeColor: route.color,
+                        }
+                    }" />
 
-          <template v-for="leg in route.legs">
-            <Polyline
-              v-for="step in leg.steps"
-              :key="step.polyline.points"
-              :options="{
-                path: api.geometry.encoding.decodePath(step.polyline.points),
-                geodesic: true,
-                strokeColor: route.color,
-                strokeOpacity: 1.0,
-                strokeWeight: 3,
-              }"
-            />
-          </template>
-        </template>
-      </template>
-    </GoogleMap>
-    <!-- <select
-      @change="handleChangeRoute"
-      style="position: fixed; top: 10%; left: 1%"
-      multiple
-    >
-      <option
-        v-for="route in routes"
-        :key="route.routeId"
-        :value="route.routeId"
-      >
-        {{ route.routeId }}
-      </option>
-    </select> -->
-  </section>
+                    <template v-for="leg in route.legs">
+                        <Polyline v-for="step in leg.steps" :key="step.polyline.points" :options="{
+                            path: api.geometry.encoding.decodePath(step.polyline.points),
+                            geodesic: true,
+                            strokeColor: route.color,
+                            strokeOpacity: .7,
+                            strokeWeight: 4,
+                        }" />
+                    </template>
+                </template>
+            </template>
+        </GoogleMap>
+    </section>
 </template>
 
-<style src="@vueform/multiselect/themes/default.css"></style>
+<style src="@vueform/multiselect/themes/default.css">
+</style>
