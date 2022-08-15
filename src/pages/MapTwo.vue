@@ -13,6 +13,10 @@ const center = {
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_MAPS as string;
 
+interface Routes {
+  id: string;
+}
+
 type Libraries = (
   | 'drawing'
   | 'geometry'
@@ -31,7 +35,7 @@ const routes = data.map((route) => ({
 const isLoading = ref(false);
 const mapRef = ref<typeof GoogleMap>();
 const routesValues = reactive({
-  value: [] as number[],
+  value: [] as Routes[],
   options: routes.map((route) => {
     return {
       id: String(route.routeId),
@@ -60,13 +64,13 @@ watch(
 
 async function handleAddRoute() {
   filteredRoutes.data = routes.filter(({ routeId }) =>
-    routesValues.value.some((route) => route === Number(routeId))
+    routesValues.value.some((route) => route.id === String(routeId))
   );
 }
 
 function handleRemove() {
   filteredRoutes.data = routes.filter(({ routeId }) =>
-    routesValues.value.some((route) => route === Number(routeId))
+    routesValues.value.some((route) => route.id === String(routeId))
   );
 }
 
