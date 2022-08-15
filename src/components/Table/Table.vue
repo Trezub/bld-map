@@ -1,28 +1,28 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import { sortBy } from 'lodash';
+import { ref } from 'vue';
+import { sortBy } from 'lodash';
 
-  interface Student {
-    ID: string;
-    Name: string;
-    Course: string;
-    Gender: string;
-    Age: string;
-  }
+interface Student {
+  ID: string;
+  Name: string;
+  Course: string;
+  Gender: string;
+  Age: string;
+}
 
-  const props = defineProps<{
-    bodyData: Student[];
-    headData: any[];
-  }>();
+const props = defineProps<{
+  bodyData: Student[];
+  headData: string[];
+}>();
 
-  let sort = ref(false);
-  let updatedList = ref([]);
-  // a function to sort the table
-  const sortTable = (col) => {
-    sort.value = true;
-    // Use of _.sortBy() method
-    updatedList.value = sortBy(props.bodyData, col);
-  };
+let sort = ref(false);
+let updatedList = ref<Student[]>([]);
+// a function to sort the table
+const sortTable = (col: string) => {
+  sort.value = true;
+  // Use of _.sortBy() method
+  updatedList.value = sortBy(props.bodyData, col);
+};
 </script>
 
 <template>
@@ -30,9 +30,9 @@
     <thead>
       <tr>
         <th
+          @click="sortTable(field)"
           v-for="field in headData"
           :key="`${field}`"
-          @click="sortTable(field)"
         >
           {{ field }}
           <i class="bi bi-sort-alpha-down" aria-label="Sort Icon"></i>

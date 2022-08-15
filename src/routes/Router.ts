@@ -5,7 +5,7 @@ import Home from '../pages/Home.vue';
 import MapRoutes from '../pages/Map.vue';
 import MapTwo from '../pages/MapTwo.vue';
 
-const DefaultLayout = import('../layouts/Default.vue');
+const DefaultLayout = () => import('../layouts/Default.vue');
 
 const routes: Array<RouteRecordRaw> = [
   {
