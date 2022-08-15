@@ -11,6 +11,8 @@ const center = {
   lng: -49.256734002415286,
 };
 
+const googleApiKey = import.meta.env.VITE_GOOGLE_API_MAPS as string;
+
 type Libraries = (
   | 'drawing'
   | 'geometry'
@@ -44,7 +46,11 @@ const filteredRoutes = reactive({
 watch(
   () => mapRef.value?.ready,
   (ready) => {
-    if (!ready) return;
+    if (!ready) {
+      isLoading.value = true;
+    } else {
+      isLoading.value = false;
+    }
     // console.log(mapRef.value, ready);
 
     // do something with the api using `mapRef.value.api`
@@ -64,16 +70,16 @@ function handleRemove() {
     routesValues.value.some((route) => route.id === String(routeId))
   );
 }
+
+function handleClearRoutes() {
+  filteredRoutes.data = [];
+}
 </script>
 
 <template>
   <section class="flex-container rounded bg-white shadow m-3">
-    <VueElementLoading :active="isLoading">
-      <img
-        src="https://i.pinimg.com/originals/9f/b1/25/9fb125f1fedc8cc62ab5b20699ebd87d.gif"
-        width="55px"
-        height="55px"
-      />
+    <VueElementLoading :active="isLoading" is-full-screen>
+      <img src="truck.gif" width="500" height="300" />
     </VueElementLoading>
 
     <div class="d-flex my-2 p-1">
@@ -89,12 +95,13 @@ function handleRemove() {
         value-prop="id"
         label="id"
         :object="true"
+        @clear="handleClearRoutes"
       />
     </div>
 
     <GoogleMap
       ref="mapRef"
-      api-key="AIzaSyDJvVSpUH-MgC5tNZy2cBTHXfEtGGFtKZg"
+      :api-key="googleApiKey"
       style="width: 100%; height: 100vh"
       :center="center"
       :zoom="12"

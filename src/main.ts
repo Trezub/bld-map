@@ -14,7 +14,7 @@ app.use(router);
 app.component('v-icon', OhVueIcon);
 // app.use(VueGoogleMaps, {
 //   load: {
-//     key: 'AIzaSyDJvVSpUH-MgC5tNZy2cBTHXfEtGGFtKZg',
+//     key: '',
 //     language: 'pt-br',
 //     libraries: 'geometry',
 //     installComponents: true,

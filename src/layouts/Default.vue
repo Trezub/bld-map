@@ -51,6 +51,11 @@ function setModalAndOffcanvas() {
                 <a class="nav-link" href="#">Map (not working)</a>
               </RouterLink>
             </li>
+            <li class="nav-item">
+              <RouterLink to="/home">
+                <a class="nav-link" href="#">Test table component</a>
+              </RouterLink>
+            </li>
           </ul>
         </div>
       </div>

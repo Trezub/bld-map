@@ -30,9 +30,10 @@ router.afterEach((to) => {
     const backdrop = document.querySelector(
       '.offcanvas-backdrop'
     ) as HTMLElement;
-
-    menu.classList.remove('show');
-    backdrop.classList.remove('show');
+    if (menu && backdrop) {
+      menu.classList.remove('show');
+      backdrop.classList.remove('show');
+    }
   });
 });
 
