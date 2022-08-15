@@ -95,9 +95,9 @@ async function handleAddInput(event: Event) {
                         position: {
                             lat: stop.address.latitude,
                             lng: stop.address.longitude,
-                        }, icon: {
-                            path: api.maps.SymbolPath.CIRCLE,
-                            scale: 7,
+                        },
+                        icon: {
+                            url: 'marker.svg',
                             strokeColor: route.color,
                         }
                     }" />
