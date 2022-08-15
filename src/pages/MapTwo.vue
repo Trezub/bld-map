@@ -29,9 +29,9 @@ const routes = data.map((route) => ({
 }));
 
 const isLoading = ref(false);
-const mapRef = ref(null);
+const mapRef = ref<typeof GoogleMap>();
 const routesValues = reactive({
-  value: [],
+  value: [] as number[],
   options: routes.map((route) => {
     return {
       id: String(route.routeId),
@@ -59,15 +59,14 @@ watch(
 );
 
 async function handleAddRoute() {
-  console.log(routesValues.value);
   filteredRoutes.data = routes.filter(({ routeId }) =>
-    routesValues.value.some((route) => route.id === String(routeId))
+    routesValues.value.some((route) => route === Number(routeId))
   );
 }
 
 function handleRemove() {
   filteredRoutes.data = routes.filter(({ routeId }) =>
-    routesValues.value.some((route) => route.id === String(routeId))
+    routesValues.value.some((route) => route === Number(routeId))
   );
 }
 
@@ -78,9 +77,12 @@ function handleClearRoutes() {
 
 <template>
   <section class="flex-container rounded bg-white shadow m-3">
-    <VueElementLoading :active="isLoading" is-full-screen>
-      <img src="truck.gif" width="500" height="300" />
-    </VueElementLoading>
+    <VueElementLoading
+      :active="isLoading"
+      spinner="spinner"
+      color="#FF6700"
+      is-full-screen
+    />
 
     <div class="d-flex my-2 p-1">
       <Multiselect

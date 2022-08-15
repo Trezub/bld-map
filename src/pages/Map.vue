@@ -34,7 +34,7 @@
       />
 
       <template v-for="leg in route.legs">
-        <GMapPolyline
+        <!-- <GMapPolyline
           v-for="step in leg.steps"
           :key="step.polyline.points"
           :editable="true"
@@ -43,7 +43,7 @@
           :options="{
             strokeColor: route.color,
           }"
-        />
+        /> -->
       </template>
     </template>
   </GMapMap>
