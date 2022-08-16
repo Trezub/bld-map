@@ -19,6 +19,7 @@
     "oh-vue-icons": "^1.0.0-rc3",
     "vue": "^3.2.37",
     "vue-element-loading": "^3.0.1",
+    "vue-final-modal": "^3.4.4",
     "vue-multiselect": "^3.0.0-alpha.2",
     "vue-query": "^1.25.2",
     "vue-router": "^4.1.3",

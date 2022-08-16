@@ -812,6 +812,11 @@ vue-element-loading@^3.0.1:
   resolved "https://registry.yarnpkg.com/vue-element-loading/-/vue-element-loading-3.0.1.tgz#3c4ab77d1b7e16870d036c386638eb31635c3bcd"
   integrity sha512-WzQJKTmOWBEfKzVoRr9Mk2aLYVxJNEatWYTNuOTG8SwWGvNI9ZfnJBxVwqTpBPclGLG7bZqTLfco+BP3ebu5Sw==
 
+vue-final-modal@^3.4.4:
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/vue-final-modal/-/vue-final-modal-3.4.4.tgz#9f4cdb0aabab86a14eb0c005b2645159b0f2095c"
+  integrity sha512-4nOLU+cMcUqAT0kg+64+Hi96kkQPOph2LOJa7Fl58BXlTyhfRxaMuz3M91wi2ooMIL4poWA8428P5GIAXSpuZg==
+
 vue-multiselect@^3.0.0-alpha.2:
   version "3.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/vue-multiselect/-/vue-multiselect-3.0.0-alpha.2.tgz#58186f781136e71f1272b98690b569a0c00ed161"

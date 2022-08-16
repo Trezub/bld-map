@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-default.css';
+import vfmPlugin from 'vue-final-modal'
 
 addIcons(FaTrash, FaEdit, FaBars);
 
@@ -12,6 +13,7 @@ import router from './routes/Router';
 
 const app = createApp(App);
 app.use(ToastPlugin);
+app.use(vfmPlugin);
 app.use(router);
 app.component('v-icon', OhVueIcon);
 
