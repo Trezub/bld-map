@@ -19,6 +19,11 @@
   resolved "https://registry.yarnpkg.com/@esbuild/linux-loong64/-/linux-loong64-0.14.54.tgz#de2a4be678bd4d0d1ffbb86e6de779cde5999028"
   integrity sha512-bZBrLAIX1kpWelV0XemxBZllyRmM6vgFQQG2GdNb+r3Fkp0FOh1NJSvekXDs7jq70k4euu1cryLMfU+mTXlEpw==
 
+"@faker-js/faker@^7.4.0":
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-7.4.0.tgz#cac720d860a89d487b47e55e66a4fd114f1d3fe5"
+  integrity sha512-xDd3Tvkt2jgkx1LkuwwxpNBy/Oe+LkZBTwkgEFTiWpVSZgQ5sc/LenbHKRHbFl0dq/KFeeq/szyyPtpJRKY0fg==
+
 "@fawmi/vue-google-maps@^0.9.72":
   version "0.9.72"
   resolved "https://registry.yarnpkg.com/@fawmi/vue-google-maps/-/vue-google-maps-0.9.72.tgz#697822856d94d51942b090cc61962f01502686cd"
@@ -828,6 +833,11 @@ vue-router@^4.1.3:
   integrity sha512-XvK81bcYglKiayT7/vYAg/f36ExPC4t90R/HIpzrZ5x+17BOWptXLCrEPufGgZeuq68ww4ekSIMBZY1qdUdfjA==
   dependencies:
     "@vue/devtools-api" "^6.1.4"
+
+vue-toast-notification@^3.0:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/vue-toast-notification/-/vue-toast-notification-3.0.4.tgz#dfd6ff37daa99be18f13c3e56dc0074fe3f3cdbe"
+  integrity sha512-rEhLtcKg8SVdBpdN7PrNst5nmY8dw0j3NkNImqurhlGurqR/QDKoou0t2PuCReEOCTKqHvfLCle2I3kwQWDWDQ==
 
 vue-tsc@^0.39.5:
   version "0.39.5"

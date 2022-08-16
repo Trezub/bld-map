@@ -5,6 +5,10 @@ import VueElementLoading from 'vue-element-loading';
 import { reactive, ref, watch } from 'vue';
 import Multiselect from '@vueform/multiselect';
 import { Route } from '../types/Routes.types';
+import { faker } from '@faker-js/faker';
+import { useToast } from 'vue-toast-notification';
+
+const toast = useToast({ duration: 5000, dismissible: true });
 
 const center = {
     lat: -25.43578524053438,
@@ -28,6 +32,7 @@ const libraries: Libraries = [
 type ImportedRoute = Route & {
     color: string;
     label: string;
+    inputName: string;
 }
 
 const isLoading = ref(false);
@@ -53,7 +58,6 @@ async function handleChange() {
     filteredRoutes.data = routesValues.options.filter(({ label }) =>
         routesValues.value.some((route) => route.label === label)
     );
-    console.log(routesValues.value);
 }
 
 function handleClearRoutes() {
@@ -61,15 +65,32 @@ function handleClearRoutes() {
 }
 
 async function handleAddInput(event: Event) {
-    const target = event.target as HTMLInputElement;
-    if (!target.files) {
-        return;
+    faker.setLocale('pt_BR');
+    const label = `${faker.hacker.adjective()}-${faker.animal.type()}`.replace(' ', '-');
+
+    const content = await navigator.clipboard.readText();
+    if (!content) {
+        return toast.error('Não foi possível ler o conteúdo do clipboard');
     }
-    const newInputs = (await Promise.all(Array.from(target.files).map(async (file) => {
-        const content = await file.text();
-        return JSON.parse(content).map((route: Route) => ({ ...route, color: generateRandomColor(), label: `${file.name} - ${route.routeId}` })) as ImportedRoute[];
-    }))).flat();
-    routesValues.options = [...routesValues.options, ...newInputs];
+    try {
+        const newRoutes = JSON
+            .parse(content)
+            .map(
+                (route: Route) => (
+                    {
+                        ...route,
+                        color: generateRandomColor(),
+                        label: `${label} - ${route.routeId}`,
+                        inputName: label,
+                    }
+                )
+            ) as ImportedRoute[];
+        routesValues.options = [...routesValues.options, ...newRoutes];
+        toast.info(`${newRoutes.length} rotas adicionadas como '${label}'`);
+    } catch (err) {
+        console.error(err);
+        toast.error('Falha ao processar dados da entrada. Verifique o formato do conteúdo.\nMais detalhes no console');
+    }
 }
 
 </script>
@@ -82,8 +103,7 @@ async function handleAddInput(event: Event) {
             <Multiselect v-model="routesValues.value" @select="handleChange" @deselect="handleChange" mode="tags"
                 :close-on-select="false" :searchable="false" :create-option="false" :options="routesValues.options"
                 value-prop="label" label="label" :object="true" @clear="handleClearRoutes" />
-            <input type="button" onclick="document.getElementById('file').click()" value="Adicionar entrada" />
-            <input type="file" style="display:none;" id="file" name="file" @change="handleAddInput" multiple />
+            <input type="button" @click="handleAddInput" value="Adicionar entrada" />
         </div>
 
         <GoogleMap ref="mapRef" :api-key="googleApiKey" style="width: 100%; height: 100vh" :center="center" :zoom="12"
