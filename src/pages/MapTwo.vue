@@ -5,7 +5,6 @@ import VueElementLoading from 'vue-element-loading';
 import { reactive, ref, watch } from 'vue';
 import Multiselect from '@vueform/multiselect';
 import { Route } from '../types/Routes.types';
-import { Convert } from '../types/Routes.types';
 
 const center = {
     lat: -25.43578524053438,
@@ -68,7 +67,7 @@ async function handleAddInput(event: Event) {
     }
     const newInputs = (await Promise.all(Array.from(target.files).map(async (file) => {
         const content = await file.text();
-        return Convert.toRoute(content).map((route) => ({ ...route, color: generateRandomColor(), label: `${file.name} - ${route.routeId}` })) as ImportedRoute[];
+        return JSON.parse(content).map((route: Route) => ({ ...route, color: generateRandomColor(), label: `${file.name} - ${route.routeId}` })) as ImportedRoute[];
     }))).flat();
     routesValues.options = [...routesValues.options, ...newInputs];
 }
