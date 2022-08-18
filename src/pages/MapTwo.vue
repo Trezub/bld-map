@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GoogleMap, Marker, Polyline } from 'vue3-google-map';
+import { GoogleMap, CustomMarker, Polyline, CustomControl } from 'vue3-google-map';
 import { generateRandomColor } from '../utils/generateRandomColor';
 import VueElementLoading from 'vue-element-loading';
 import { reactive, ref, watch } from 'vue';
@@ -7,6 +7,7 @@ import Multiselect from '@vueform/multiselect';
 import { Route } from '../types/Routes.types';
 import { faker } from '@faker-js/faker';
 import { useToast } from 'vue-toast-notification';
+import MarkerIcon from '../components/MarkerIcon.vue';
 
 const toast = useToast({ duration: 5000, dismissible: true });
 
@@ -87,6 +88,7 @@ async function handleAddInput() {
             ) as ImportedRoute[];
         routesValues.options = [...routesValues.options, ...newRoutes];
         toast.info(`${newRoutes.length} rotas adicionadas como '${label}'`);
+        console.log(newRoutes[0]);
     } catch (err) {
         console.error(err);
         toast.error('Falha ao processar dados da entrada. Verifique o formato do conteúdo.\nMais detalhes no console');
@@ -121,9 +123,11 @@ const modal = reactive({ show: false });
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p @click="saveInput(inputName)" v-for="inputName in new Set(routesValues.options.map(({ inputName }) => inputName))">{{
-                            inputName
-                    }} - {{routesValues.options.filter((option) => inputName === option.inputName).length}} rotas</p>
+                    <p @click="saveInput(inputName)"
+                        v-for="inputName in new Set(routesValues.options.map(({ inputName }) => inputName))">{{
+                                inputName
+                        }} - {{ routesValues.options.filter((option) => inputName === option.inputName).length }} rotas
+                    </p>
                 </div>
             </div>
         </vue-final-modal>
@@ -137,21 +141,25 @@ const modal = reactive({ show: false });
                 value="Salvar entrada">
         </div>
 
-        <GoogleMap ref="mapRef" :api-key="googleApiKey" style="width: 100%; height: calc(100vh - 40px)" :center="center" :zoom="12"
-            :libraries="libraries">
+        <GoogleMap :styles="[{ featureType: 'poi', stylers: [{ visibility: 'off' }] }]" :street-view-control="false"
+            :clickable-icons="false" ref="mapRef" :api-key="googleApiKey"
+            style="width: 100%; height: calc(100vh - 40px)" :center="center" :zoom="12" :libraries="libraries">
             <template #default="{ ready, api }">
                 <template v-if="ready" v-for="route in filteredRoutes.data" :key="route.routeId">
-                    <Marker :key="index" v-for="(stop, index) in route.stops" :options="{
+                    <CustomControl position="BOTTOM_CENTER">
+                        <button>teste</button>
+                    </CustomControl>
+                    <CustomMarker :key="index" v-for="(stop, index) in route.stops" :options="{
                         position: {
                             lat: stop.address.latitude,
                             lng: stop.address.longitude,
                         },
-                        icon: {
-                            url: 'marker.svg',
-                            strokeColor: route.color,
-                        }
-                    }" />
-
+                    }">
+                        <MarkerIcon :border-color="route.color" />
+                        <div style="transform: translate(2px, -24px); width: 20px; text-align: center;">
+                            {{ index + 1 }}
+                        </div>
+                    </CustomMarker>
                     <template v-for="leg in route.legs">
                         <Polyline v-for="step in leg.steps" :key="step.polyline.points" :options="{
                             path: api.geometry.encoding.decodePath(step.polyline.points),
@@ -181,7 +189,7 @@ const modal = reactive({ show: false });
     border-radius: 10px;
 }
 
-.modal-body > p {
+.modal-body>p {
     margin: 5px;
     background-color: #ddd;
     border-radius: 7px;
@@ -190,10 +198,12 @@ const modal = reactive({ show: false });
     transition: all .1s ease-in-out;
     user-select: none;
 }
-.modal-body > p:hover {
+
+.modal-body>p:hover {
     background-color: #ccc;
 }
-.modal-body > p:active {
+
+.modal-body>p:active {
     background-color: #bbb;
 }
 </style>
